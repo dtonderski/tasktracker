@@ -52,7 +52,7 @@
 		<string>Editor</string>
 		<key>CFBundleURLSchemes</key>
 		<array>
-		  <string>io.supabase.flutterquickstart</string>
+		  <string>com.example.tasktracker</string>
 		</array>
 	  </dict>
 	</array>
