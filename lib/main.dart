@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_auth_ui/supabase_auth_ui.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  await dotenv.load(fileName: ".env");
   await Supabase.initialize(
-    url: "https://qpavyyivawjpafiewxcn.supabase.co",
-    anonKey:
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFwYXZ5eWl2YXdqcGFmaWV3eGNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjk5NTgyODAsImV4cCI6MjA0NTUzNDI4MH0.hoJVzbagCbNjaAWwHKrdqtd3fjg8gO3O8RTUr3zMUik",
+    url: dotenv.get('SUPABASE_URL'),
+    anonKey: dotenv.get('SUPABASE_ANON_KEY'),
   );
-
   runApp(const MaterialApp(home: MainApp()));
 }
 
@@ -30,7 +30,8 @@ class MainApp extends StatelessWidget {
                     builder: ((context) {
                       return SimpleDialog(
                           title: const Text('Add a Note'),
-                          contentPadding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+                          contentPadding: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 8.0),
                           children: [
                             TextFormField(
                               onFieldSubmitted: (value) async {
