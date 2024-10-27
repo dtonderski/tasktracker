@@ -9,10 +9,16 @@ class LoginScreen extends StatelessWidget {
   const LoginScreen({Key? key, required this.onLoginSuccess}) : super(key: key);
   String getRedirectUrl() {
     if (kIsWeb) {
-      // Get the current URL and use it as the redirect URL
+      // Check if running on GitHub Pages
       final uri = Uri.base;
-      return '${uri.scheme}://${uri.host}:${uri.port}';
+      if (uri.host == 'dtonderski.github.io') {
+        return 'https://dtonderski.github.io/tasktracker/';
+      } else {
+        // For local development (e.g., localhost:8000)
+        return '${uri.scheme}://${uri.host}:${uri.port}';
+      }
     }
+    // For mobile and other platforms, use the app's custom URI scheme
     return 'com.example.tasktracker://login-callback';
   }
 
