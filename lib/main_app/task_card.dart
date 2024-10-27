@@ -1,118 +1,146 @@
-// task_card.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-class TaskCard extends StatelessWidget {
-  final String title;
-  final String date;
-  final String priority;
-  final String category;
-  final int commentsCount;
-  final int attachmentsCount;
+class TaskCard extends StatefulWidget {
+  final Map<String, dynamic> task;
+  final VoidCallback onComplete;
 
   const TaskCard({
-    super.key,
-    required this.title,
-    required this.date,
-    required this.priority,
-    required this.category,
-    required this.commentsCount,
-    required this.attachmentsCount,
-  });
+    Key? key,
+    required this.task,
+    required this.onComplete,
+  }) : super(key: key);
+
+  @override
+  TaskCardState createState() => TaskCardState();
+}
+
+class TaskCardState extends State<TaskCard> {
+  bool _isCompleted = false;
+
+  void setComplete() {
+    setState(() {
+      _isCompleted = true;
+    });
+  }
+
+  void setIncomplete() {
+    setState(() {
+      _isCompleted = false;
+    });
+  }
+
+  String get title =>
+      widget.task[dotenv.get('TASK_BODY_COLUMN')] ?? 'No Title';
+  int? get points => widget.task[dotenv.get('TASK_POINT_COLUMN')];
 
   @override
   Widget build(BuildContext context) {
+    // Theme-related variables
+    final theme = Theme.of(context);
+    final isDarkTheme = theme.brightness == Brightness.dark;
+
+    // Define green colors for completed state
+    final completedBackgroundColor = isDarkTheme
+        ? Colors.green[900]?.withOpacity(0.2) // Darker green for dark theme
+        : Colors.green[50]; // Lighter green for light theme
+    final completedBorderColor = Colors.green;
+    final completedIconColor = Colors.green;
+
+    // Define default colors for incomplete state
+    final defaultBackgroundColor = theme.cardColor;
+    final defaultBorderColor = Colors.transparent;
+    final defaultIconColor = theme.iconTheme.color;
+
+    // Determine colors based on completion status
+    final cardBackgroundColor =
+        _isCompleted ? completedBackgroundColor : defaultBackgroundColor;
+    final borderSideColor =
+        _isCompleted ? completedBorderColor : defaultBorderColor;
+    final iconColor = _isCompleted ? completedIconColor : defaultIconColor;
+
+    // Text colors
+    final textColor = theme.textTheme.titleMedium?.color;
+    final secondaryTextColor = theme.textTheme.bodySmall?.color;
+
     return Card(
+      color: cardBackgroundColor,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
+        borderRadius: BorderRadius.circular(8.0),
+        side: BorderSide(
+          color: borderSideColor,
+          width: 1.5,
+        ),
       ),
-      elevation: 3,
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      elevation: 2,
+      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+            // Checkbox IconButton
+            IconButton(
+              onPressed: () {
+                _isCompleted ? setIncomplete() : setComplete();
+                widget.onComplete();
+              },
+              icon: Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.transparent,
+                  border: Border.all(
+                    color: iconColor ?? Colors.grey,
+                    width: 1.5,
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.more_vert),
-                  onPressed: () {
-                    // Add options like edit, delete here
-                  },
+                child: Icon(
+                  Icons.check,
+                  color: iconColor ?? Colors.grey,
+                  size: 18,
                 ),
-              ],
+              ),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
             ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                _buildBadge(priority, Colors.pink),
-                const SizedBox(width: 8),
-                _buildBadge(category, Colors.blue),
-              ],
+            const SizedBox(width: 16),
+            // Title and Points
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      decoration: _isCompleted
+                          ? TextDecoration.lineThrough
+                          : TextDecoration.none,
+                      color: textColor,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "Points: ${points ?? 0}",
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: secondaryTextColor,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  date,
-                  style: TextStyle(color: Colors.grey[600]),
-                ),
-                Row(
-                  children: [
-                    const Icon(Icons.comment, size: 18),
-                    const SizedBox(width: 4),
-                    Text("$commentsCount"),
-                    const SizedBox(width: 16),
-                    const Icon(Icons.attach_file, size: 18),
-                    const SizedBox(width: 4),
-                    Text("$attachmentsCount"),
-                    const SizedBox(width: 16),
-                    const CircleAvatar(
-                      backgroundColor: Colors.green,
-                      radius: 12,
-                      child: Text(
-                        "A",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    const CircleAvatar(
-                      backgroundColor: Colors.orange,
-                      radius: 12,
-                      child: Text(
-                        "B",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+            // More options icon
+            IconButton(
+              icon: Icon(Icons.more_vert, color: theme.iconTheme.color),
+              onPressed: () {},
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildBadge(String text, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12),
       ),
     );
   }

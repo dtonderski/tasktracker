@@ -11,15 +11,27 @@ class TaskService {
     return List<Map<String, dynamic>>.from(response);
   }
 
-  Future<void> addTask(String value, String userId) async {
+  Future<void> addTask(String value, String userId, int points) async {
     await _supabase.from(_tableName).insert({
       dotenv.get('TASK_BODY_COLUMN'): value,
       'user_id': userId,
+      'points': points
     });
   }
 
-  Future<String?> getUserId() async {
-    final userResponse = await _supabase.auth.getUser();
-    return userResponse.user?.id;
+
+  // Set up a subscription to listen for real-time changes in the tasks table
+  void subscribeToTaskChanges(
+      Function(PostgresChangePayload payload) onTaskChange) {
+    // Subscribe to real-time changes using a RealtimeChannel
+    _supabase
+        .channel('public:${_tableName}')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: _tableName,
+          callback: onTaskChange,
+        )
+        .subscribe();
   }
 }
