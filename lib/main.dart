@@ -3,7 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tasktracker/login.dart';
-import 'package:tasktracker/main_app.dart';
+import 'package:tasktracker/main_app/main_app_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
