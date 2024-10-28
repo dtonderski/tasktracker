@@ -83,7 +83,7 @@ class TaskCardState extends State<TaskCard> {
             IconButton(
               onPressed: () {
                 _isCompleted ? setIncomplete() : setComplete();
-                widget.onComplete();
+                if (_isCompleted) widget.onComplete();
               },
               icon: Container(
                 width: 28,

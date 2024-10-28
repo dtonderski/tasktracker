@@ -7,7 +7,7 @@ import 'package:tasktracker/main_app/main_app_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  usePathUrlStrategy();
+  // usePathUrlStrategy();
   await Supabase.initialize(
     url: supabaseUrl,
     anonKey: supabaseAnonKey,
