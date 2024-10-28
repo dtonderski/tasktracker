@@ -1,10 +1,10 @@
 // task_service.dart
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:tasktracker/env.dart';
 
 class TaskService {
   final SupabaseClient _supabase = Supabase.instance.client;
-  final String _tableName = dotenv.get('TASKS_TABLE_NAME');
+  final String _tableName = tasksTableName;
 
   Future<List<Map<String, dynamic>>> fetchTasks() async {
     final response = await _supabase.from(_tableName).select();
@@ -13,7 +13,7 @@ class TaskService {
 
   Future<void> addTask(String value, String userId, int points) async {
     await _supabase.from(_tableName).insert({
-      dotenv.get('TASK_BODY_COLUMN'): value,
+      taskBodyColumn: value,
       'user_id': userId,
       'points': points
     });

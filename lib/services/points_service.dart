@@ -1,11 +1,11 @@
 // task_service.dart
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:tasktracker/env.dart';
 import 'package:tasktracker/services/auth_service.dart';
 
 class PointsService {
   final SupabaseClient _supabase = Supabase.instance.client;
-  final String _tableName = dotenv.get('POINTS_TABLE_NAME');
+  final String _tableName = pointsTableName;
 
   Future<int> fetchPoints() async {
     final result = await _supabase.from(_tableName).select();

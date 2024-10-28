@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:tasktracker/env.dart';
 
 class TaskCard extends StatefulWidget {
   final Map<String, dynamic> task;
@@ -31,8 +31,8 @@ class TaskCardState extends State<TaskCard> {
   }
 
   String get title =>
-      widget.task[dotenv.get('TASK_BODY_COLUMN')] ?? 'No Title';
-  int? get points => widget.task[dotenv.get('TASK_POINT_COLUMN')];
+      widget.task[taskBodyColumn] ?? 'No Title';
+  int? get points => widget.task[taskPointColumn];
 
   @override
   Widget build(BuildContext context) {
