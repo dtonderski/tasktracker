@@ -193,9 +193,80 @@ class _MainAppScreenState extends State<MainAppScreen> {
                         ),
               // Second tab content (Rewards)
               Center(
-                child: Text(
-                  'Rewards',
-                  style: Theme.of(context).textTheme.headlineLarge,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Rewards',
+                      style: Theme.of(context).textTheme.headlineLarge,
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          int pointsToRedeem = 0;
+                          final _formKey = GlobalKey<FormState>();
+                          return AlertDialog(
+                            title: const Text('Redeem Points'),
+                            content: SingleChildScrollView(
+                              child: Form(
+                                key: _formKey,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    // Task Description Field
+                                    TextFormField(
+                                      autofocus: true,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Points to Redeem',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      keyboardType: TextInputType.number,
+                                      onChanged: (value) {
+                                        pointsToRedeem = int.tryParse(value) ?? 0;
+                                      },
+                                      validator: (value) {
+                                        if (value == null ||
+                                            value.trim().isEmpty) {
+                                          return 'Please enter the number of points to redeem';
+                                        }
+                                        if (int.tryParse(value) == null) {
+                                          return 'Please enter a valid number';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            actions: [
+                              // Cancel Button
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context, rootNavigator: true)
+                                      .pop('dialog');
+                                },
+                                child: const Text('Cancel'),
+                              ),
+                              // Redeem Button
+                              TextButton(
+                                onPressed: () async {
+                                  if (_formKey.currentState!.validate()) {
+                                    await _redeemPoints(pointsToRedeem);
+                                    Navigator.of(context, rootNavigator: true)
+                                        .pop('dialog');
+                                  }
+                                },
+                                child: const Text('Redeem'),
+                              ),
+                            ],
+                          );
+                        }
+                      );
+                    }, child: const Text("Redeem Points")),
+                  ],
                 ),
               ),
             ],
@@ -309,5 +380,17 @@ class _MainAppScreenState extends State<MainAppScreen> {
     }
 
     await _taskService.addTask(value, userId, points);
+  }
++
+  Future<void> _redeemPoints(int points) async {
+    final userId = await getUserId();
+    if (userId == null) {
+      print('User not authenticated.');
+      return;
+    }
+    setState(() {
+      _totalPoints -= points;
+    });
+    await _pointsService.updatePoints(_totalPoints);
   }
 }
