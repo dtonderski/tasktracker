@@ -25,7 +25,7 @@ class TaskService {
       Function(PostgresChangePayload payload) onTaskChange) {
     // Subscribe to real-time changes using a RealtimeChannel
     _supabase
-        .channel('public:${_tableName}')
+        .channel('public:$_tableName')
         .onPostgresChanges(
           event: PostgresChangeEvent.all,
           schema: 'public',

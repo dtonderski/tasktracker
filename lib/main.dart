@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tasktracker/env.dart';
 import 'package:tasktracker/login.dart';
@@ -16,7 +15,7 @@ void main() async {
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();

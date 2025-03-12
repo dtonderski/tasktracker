@@ -6,10 +6,10 @@ class TaskCard extends StatefulWidget {
   final VoidCallback onComplete;
 
   const TaskCard({
-    Key? key,
+    super.key,
     required this.task,
     required this.onComplete,
-  }) : super(key: key);
+  });
 
   @override
   TaskCardState createState() => TaskCardState();
@@ -44,12 +44,12 @@ class TaskCardState extends State<TaskCard> {
     final completedBackgroundColor = isDarkTheme
         ? Colors.green[900]?.withOpacity(0.2) // Darker green for dark theme
         : Colors.green[50]; // Lighter green for light theme
-    final completedBorderColor = Colors.green;
-    final completedIconColor = Colors.green;
+    const completedBorderColor = Colors.green;
+    const completedIconColor = Colors.green;
 
     // Define default colors for incomplete state
     final defaultBackgroundColor = theme.cardColor;
-    final defaultBorderColor = Colors.transparent;
+    const defaultBorderColor = Colors.transparent;
     final defaultIconColor = theme.iconTheme.color;
 
     // Determine colors based on completion status

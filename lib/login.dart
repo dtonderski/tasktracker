@@ -6,7 +6,7 @@ import 'package:tasktracker/extensions.dart';
 class LoginScreen extends StatelessWidget {
   final VoidCallback onLoginSuccess;
 
-  const LoginScreen({Key? key, required this.onLoginSuccess}) : super(key: key);
+  const LoginScreen({super.key, required this.onLoginSuccess});
   String getRedirectUrl() {
     if (kIsWeb) {
       // Check if running on GitHub Pages

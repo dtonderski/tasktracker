@@ -114,7 +114,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
 
   void _handleCompleteTask(Map<String, dynamic> task) {
     // Perform checks and update state here
-    final shouldCompleteTask = true; // Replace with your actual condition logic
+    const shouldCompleteTask = true; // Replace with your actual condition logic
     String taskId = task['id'];
     int taskPoints = task['points'];
 
@@ -211,12 +211,12 @@ class _MainAppScreenState extends State<MainAppScreen> {
                       builder: (context) {
                         String newTask = '';
                         int taskPoints = 0;
-                        final _formKey = GlobalKey<FormState>();
+                        final formKey = GlobalKey<FormState>();
                         return AlertDialog(
                           title: const Text('Add a Task'),
                           content: SingleChildScrollView(
                             child: Form(
-                              key: _formKey,
+                              key: formKey,
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -276,7 +276,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
                             // Add Button
                             TextButton(
                               onPressed: () async {
-                                if (_formKey.currentState!.validate()) {
+                                if (formKey.currentState!.validate()) {
                                   await _addTask(newTask, taskPoints);
                                   Navigator.of(context, rootNavigator: true)
                                       .pop('dialog');
