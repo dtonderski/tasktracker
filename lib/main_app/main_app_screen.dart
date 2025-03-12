@@ -381,7 +381,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
 
     await _taskService.addTask(value, userId, points);
   }
-+
+
   Future<void> _redeemPoints(int points) async {
     final userId = await getUserId();
     if (userId == null) {
