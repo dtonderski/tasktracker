@@ -5,6 +5,7 @@ import 'package:tasktracker/extensions.dart';
 import 'package:tasktracker/services/auth_service.dart';
 import 'package:tasktracker/services/points_service.dart';
 import 'package:tasktracker/services/task_service.dart';
+import '../login.dart';
 import 'task_card.dart';
 
 class MainAppScreen extends StatefulWidget {
@@ -161,6 +162,18 @@ class _MainAppScreenState extends State<MainAppScreen> {
                     ? Icons.dark_mode
                     : Icons.light_mode),
                 onPressed: _toggleTheme,
+              ),
+              IconButton(
+                  icon: const Icon(Icons.logout),
+                  onPressed: () async {
+                    await logout();
+                    // Navigate to the login screen after logout
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) => const LoginScreen()),
+                          (route) => false,
+                    );
+                    
+                  }
               ),
             ],
             bottom: const TabBar(
