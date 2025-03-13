@@ -7,3 +7,6 @@ A new Flutter project.
 flutter build web --web-renderer html
 ```
 Copy `build/web` to `docs/`.
+```
+cp -force .\build\web\* docs\
+```

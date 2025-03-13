@@ -121,7 +121,8 @@ class _MainAppScreenState extends State<MainAppScreen> {
     if (shouldCompleteTask) {
       // If the task should be marked as complete, call setComplete on the TaskCard
       _taskCardKeys[taskId]?.currentState?.setComplete();
-      context.showSnackBar("Completed ${task['body']} - you gained $taskPoints points!");
+      context.showSnackBar(
+          "Completed ${task['body']} - you gained $taskPoints points!");
       setState(() {
         _totalPoints += taskPoints;
       });
@@ -134,6 +135,12 @@ class _MainAppScreenState extends State<MainAppScreen> {
       _themeMode =
           _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
     });
+  }
+
+  // Add logout function
+  void _logout() async {
+    await Supabase.instance.client.auth.signOut();
+    context.showSnackBar('Logged out successfully');
   }
 
   @override
@@ -161,6 +168,11 @@ class _MainAppScreenState extends State<MainAppScreen> {
                     ? Icons.dark_mode
                     : Icons.light_mode),
                 onPressed: _toggleTheme,
+              ),
+              // Logout Button
+              TextButton(
+                onPressed: _logout,
+                child: const Text('Logout'),
               ),
             ],
             bottom: const TabBar(
@@ -201,71 +213,75 @@ class _MainAppScreenState extends State<MainAppScreen> {
                       style: Theme.of(context).textTheme.headlineLarge,
                     ),
                     const SizedBox(height: 20),
-                    ElevatedButton(onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          int pointsToRedeem = 0;
-                          final _formKey = GlobalKey<FormState>();
-                          return AlertDialog(
-                            title: const Text('Redeem Points'),
-                            content: SingleChildScrollView(
-                              child: Form(
-                                key: _formKey,
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    // Task Description Field
-                                    TextFormField(
-                                      autofocus: true,
-                                      decoration: const InputDecoration(
-                                        labelText: 'Points to Redeem',
-                                        border: OutlineInputBorder(),
+                    ElevatedButton(
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                int pointsToRedeem = 0;
+                                final _formKey = GlobalKey<FormState>();
+                                return AlertDialog(
+                                  title: const Text('Redeem Points'),
+                                  content: SingleChildScrollView(
+                                    child: Form(
+                                      key: _formKey,
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          // Task Description Field
+                                          TextFormField(
+                                            autofocus: true,
+                                            decoration: const InputDecoration(
+                                              labelText: 'Points to Redeem',
+                                              border: OutlineInputBorder(),
+                                            ),
+                                            keyboardType: TextInputType.number,
+                                            onChanged: (value) {
+                                              pointsToRedeem =
+                                                  int.tryParse(value) ?? 0;
+                                            },
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.trim().isEmpty) {
+                                                return 'Please enter the number of points to redeem';
+                                              }
+                                              if (int.tryParse(value) == null) {
+                                                return 'Please enter a valid number';
+                                              }
+                                              return null;
+                                            },
+                                          ),
+                                        ],
                                       ),
-                                      keyboardType: TextInputType.number,
-                                      onChanged: (value) {
-                                        pointsToRedeem = int.tryParse(value) ?? 0;
+                                    ),
+                                  ),
+                                  actions: [
+                                    // Cancel Button
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context,
+                                                rootNavigator: true)
+                                            .pop('dialog');
                                       },
-                                      validator: (value) {
-                                        if (value == null ||
-                                            value.trim().isEmpty) {
-                                          return 'Please enter the number of points to redeem';
+                                      child: const Text('Cancel'),
+                                    ),
+                                    // Redeem Button
+                                    TextButton(
+                                      onPressed: () async {
+                                        if (_formKey.currentState!.validate()) {
+                                          await _redeemPoints(pointsToRedeem);
+                                          Navigator.of(context,
+                                                  rootNavigator: true)
+                                              .pop('dialog');
                                         }
-                                        if (int.tryParse(value) == null) {
-                                          return 'Please enter a valid number';
-                                        }
-                                        return null;
                                       },
+                                      child: const Text('Redeem'),
                                     ),
                                   ],
-                                ),
-                              ),
-                            ),
-                            actions: [
-                              // Cancel Button
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context, rootNavigator: true)
-                                      .pop('dialog');
-                                },
-                                child: const Text('Cancel'),
-                              ),
-                              // Redeem Button
-                              TextButton(
-                                onPressed: () async {
-                                  if (_formKey.currentState!.validate()) {
-                                    await _redeemPoints(pointsToRedeem);
-                                    Navigator.of(context, rootNavigator: true)
-                                        .pop('dialog');
-                                  }
-                                },
-                                child: const Text('Redeem'),
-                              ),
-                            ],
-                          );
-                        }
-                      );
-                    }, child: const Text("Redeem Points")),
+                                );
+                              });
+                        },
+                        child: const Text("Redeem Points")),
                   ],
                 ),
               ),
